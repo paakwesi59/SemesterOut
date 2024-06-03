@@ -24,23 +24,31 @@ class Customer {
 
 // Main class for the barbershop simulation
 public class BarberShopSimulation extends JFrame implements KeyListener {
-    private static final int MAX_WAITING_CHAIRS = 5; // Maximum number of waiting chairs
-    private static Customer[] waitingQueue = new Customer[MAX_WAITING_CHAIRS]; // Array to represent waiting customers
-    private static Customer currentCustomer = null; // Currently served customer
-    private static int ordCount = 1; // Counter for ordinary customers
-    private static int vipCount = 1; // Counter for VIP customers
-    private static int simulationCount = 0; // Counter for simulation events
-    private static int queueSize = 0; // Current size of the waiting queue
-    private Random random; // Random object to generate random events
+    // Maximum number of waiting chairs
+    private static final int MAX_WAITING_CHAIRS = 5;
+    // Array to represent waiting customers
+    private static Customer[] waitingQueue = new Customer[MAX_WAITING_CHAIRS];
+    // Currently served customer
+    private static Customer currentCustomer = null;
+    // Counter for ordinary customers
+    private static int ordCount = 1;
+    // Counter for VIP customers
+    private static int vipCount = 1;
+    // Counter for simulation events
+    private static int simulationCount = 0;
+    // Current size of the waiting queue
+    private static int queueSize = 0;
+    // Random object to generate random events
+    private Random random;
 
     // Constructor
     public BarberShopSimulation() {
         setTitle("Barber Shop Simulation");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        addKeyListener(this); // Register key listener
-        random = new Random(); // Initialize Random object
-        initWaitingQueue(); // Initialize waiting queue
+        addKeyListener(this);
+        random = new Random();
+        initWaitingQueue();
     }
 
     // Method to initialize waitingQueue with Customer objects
@@ -74,22 +82,24 @@ public class BarberShopSimulation extends JFrame implements KeyListener {
 
     // Method to handle a new customer arriving
     private void handleNewCustomer(boolean isVIP) {
-        String customerName = isVIP ? "VIP" + vipCount++ : "ORD" + ordCount++; // Generate customer name
+        String customerName = isVIP ? "VIP" + vipCount++ : "ORD" + ordCount++;
 
         // If barber is free and no waiting customers, serve immediately
         if (currentCustomer == null && queueSize == 0) {
             currentCustomer = new Customer();
             currentCustomer.setCustomerDetails(customerName, isVIP);
-        } else if (queueSize < MAX_WAITING_CHAIRS) { // Add customer to the waiting queue if there's space
+        } else if (queueSize < MAX_WAITING_CHAIRS) {
             Customer newCustomer = new Customer();
             newCustomer.setCustomerDetails(customerName, isVIP);
             if (isVIP) {
-                enqueueVIP(newCustomer); // Enqueue VIP customer at the front
+                // Enqueue VIP customer at the front
+                enqueueVIP(newCustomer);
             } else {
-                enqueue(newCustomer); // Enqueue ordinary customer at the end
+                // Enqueue ordinary customer at the end
+                enqueue(newCustomer);
             }
         } else {
-            // If no space in waiting queue, customer leaves without being served
+            // If there are no spaces in the waiting queue, customer leaves without being served
             System.out.println(simulationCount + " ---> (+-" + customerName + ") [" + getCustomerListString() + "]");
             return;
         }
@@ -101,20 +111,23 @@ public class BarberShopSimulation extends JFrame implements KeyListener {
     // Method to serve the next customer from the queue
     private void serveNextCustomer() {
         if (queueSize > 0) {
-            currentCustomer = waitingQueue[0]; // Dequeue the first customer
+            // Dequeue the first customer
+            currentCustomer = waitingQueue[0];
             for (int i = 1; i < queueSize; i++) {
-                waitingQueue[i - 1] = waitingQueue[i]; // Shift remaining customers forward
+                // Shift remaining customers forward
+                waitingQueue[i - 1] = waitingQueue[i];
             }
-            queueSize--; // Decrease queue size
-            waitingQueue[queueSize] = null; // Clear the last position
+            // Decrease queue size
+            queueSize--;
+            waitingQueue[queueSize] = null;
         }
     }
 
     // Method to enqueue a VIP customer at the front of the waiting queue
     private void enqueueVIP(Customer vipCustomer) {
-        int insertPos = 0; // Start by assuming the VIP customer will be inserted at the front
+        int insertPos = 0;
 
-        // Find the correct position to insert the VIP customer without shifting other VIPs
+        // Insert the VIP customer without shifting other VIPs
         for (int i = 0; i < queueSize; i++) {
             if (!waitingQueue[i].isVIP) {
                 insertPos = i;
@@ -128,24 +141,24 @@ public class BarberShopSimulation extends JFrame implements KeyListener {
             waitingQueue[i] = waitingQueue[i - 1];
         }
 
-        waitingQueue[insertPos] = vipCustomer; // Place VIP customer at the correct position
-        queueSize++; // Increase queue size
+        waitingQueue[insertPos] = vipCustomer;
+        queueSize++;
     }
 
     // Method to enqueue an ordinary customer at the end of the waiting queue
     private void enqueue(Customer customer) {
-        waitingQueue[queueSize] = customer; // Place ordinary customer at the end
-        queueSize++; // Increase queue size
+        waitingQueue[queueSize] = customer;
+        queueSize++;
     }
 
     // Method to get a string representation of the current state of the shop
     private String getCustomerListString() {
         StringBuilder result = new StringBuilder();
         if (currentCustomer != null) {
-            result.append(currentCustomer.getCustomerName()); // Append current customer being served
+            result.append(currentCustomer.getCustomerName());
         }
         for (int i = 0; i < queueSize; i++) {
-            result.append(" ").append(waitingQueue[i].getCustomerName()); // Append waiting customers
+            result.append(" ").append(waitingQueue[i].getCustomerName());
         }
         return result.toString();
     }
@@ -159,9 +172,9 @@ public class BarberShopSimulation extends JFrame implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) { // When spacebar is pressed
-            int event = random.nextInt(4); // Generate a random event (0 to 3)
-            handleEvent(event); // Handle the event
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            int event = random.nextInt(4);
+            handleEvent(event);
         } else {
             // If any other key is pressed, terminate the program
             System.exit(0);
@@ -172,7 +185,7 @@ public class BarberShopSimulation extends JFrame implements KeyListener {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             BarberShopSimulation simulation = new BarberShopSimulation();
-            simulation.setVisible(true); // Display the frame
+            simulation.setVisible(true);
         });
     }
 }
